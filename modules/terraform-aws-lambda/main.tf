@@ -25,11 +25,13 @@ resource "aws_iam_policy" "LambdaPolicy" {
     "Version" : "2012-10-17",
     "Statement" : [
       {
-        "Action": [
-          "logs:*"
+        "Effect" : "Allow",
+        "Action" : [
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
         ],
-        "Resource": "arn:aws:logs:*:*:*",
-        "Effect": "Allow"
+        "Resource" : "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${aws_lambda_function.alcon-workshop-lambda.function_name}:*:*"
+        "Resource" : "*"
       },
       {
         "Effect": "Allow",
@@ -42,8 +44,7 @@ resource "aws_iam_policy" "LambdaPolicy" {
         "Effect": "Allow",
         "Action": [
             "s3:GetObject",
-            "s3:PutObject",
-            "s3:ListBucket"
+            "s3:PutObject"
         ],
         "Resource" : [
           var.s3_bucket_arn,
@@ -82,6 +83,7 @@ resource "aws_lambda_function" "alcon-workshop-lambda" {
     variables = {
       AUTH_TOKEN = "1q2w3e4r5t",  # A good practice is to use AWS Secrets Manager to store secrets and sensitive info but for this workshop we will use a simple variable
       S3_BUCKET_NAME = var.s3_bucket_name,
+      LAYER = var.layer
     }
   }
 }
