@@ -99,3 +99,4 @@ output "glue_job_name_python_shell" {
 output "glue_job_arn_python_shell" {
   value = join(",", aws_glue_job.glue_job_python_shell.*.arn)
 }
+
