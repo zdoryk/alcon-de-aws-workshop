@@ -1,19 +1,7 @@
-variable "database_name" {
-  type    = string
-}
-
-variable "table_name" {
-  type    = string
-}
-
-variable "s3_location" {
-  type    = string
-}
-
 data "aws_caller_identity" "current_caller" {}
 
 resource "aws_s3_bucket" "athena_query_results" {
-  bucket = "alcon-workshop-athena-output-${data.aws_caller_identity.current_caller.id}"
+  bucket = "workshop-athena-output-${data.aws_caller_identity.current_caller.id}"
 }
 
 resource "aws_glue_catalog_database" "athena_database" {
@@ -76,8 +64,8 @@ resource "aws_glue_catalog_table" "athena_table" {
   }
 }
 
-resource "aws_athena_workgroup" "athena_alcon_workshop_workgroup" {
-  name = "athena_alcon_workshop_workgroup"
+resource "aws_athena_workgroup" "athena_workshop_workgroup" {
+  name = "athena_workshop_workgroup"
 
   configuration {
     result_configuration {
@@ -88,10 +76,10 @@ resource "aws_athena_workgroup" "athena_alcon_workshop_workgroup" {
 
 resource "aws_athena_named_query" "athena_named_query" {
   database          = var.database_name
-  name              = "athena_alcon_workshop_named_query"
+  name              = "athena_workshop_named_query"
   query             = "SELECT * FROM ${var.table_name}"
   description       = "Example Named Query for Athena"
-  workgroup         = aws_athena_workgroup.athena_alcon_workshop_workgroup.id
+  workgroup         = aws_athena_workgroup.athena_workshop_workgroup.id
 }
 
 output "athena_table_name" {

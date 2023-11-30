@@ -1,6 +1,6 @@
 # AWS Step Functions IAM roles and Policies
-resource "aws_iam_role" "aws_sfn_role" {
-  name = "aws-sfn-role"
+resource "aws_iam_role" "sfn_role" {
+  name = "workshop-sfn-role"
   assume_role_policy = <<EOF
 {
    "Version": "2012-10-17",
@@ -20,9 +20,9 @@ resource "aws_iam_role" "aws_sfn_role" {
 EOF
 }
 
-resource "aws_iam_role_policy" "step_function_policy" {
-  name    = "aws-sfn-policy"
-  role    = aws_iam_role.aws_sfn_role.id
+resource "aws_iam_role_policy" "sfn_policy" {
+  name    = "workshop-sfn-policy"
+  role    = aws_iam_role.sfn_role.id
 
   policy  = <<EOF
 {
@@ -57,11 +57,11 @@ EOF
 }
 
 # AWS Step function definition
-resource "aws_sfn_state_machine" "aws_step_function_workflow" {
-  name = "aws-step-function-workflow"
-  role_arn   = aws_iam_role.aws_sfn_role.arn
+resource "aws_sfn_state_machine" "sfn_workflow" {
+  name = "workshop-sfn-workflow"
+  role_arn   = aws_iam_role.sfn_role.arn
   definition = jsonencode({
-    "Comment":"A description of the sample glue job state machine using Terraform",
+    "Comment":"A description of the simple state machine using Terraform",
     "StartAt":"Lambda Raw",
     "States":{
       "Lambda Raw":{
@@ -92,11 +92,11 @@ resource "aws_sfn_state_machine" "aws_step_function_workflow" {
 
 # outputs
 output "sfn_role_arn" {
-  value = aws_iam_role.aws_sfn_role.arn
+  value = aws_iam_role.sfn_role.arn
 }
 output "sfn_name" {
-  value = aws_sfn_state_machine.aws_step_function_workflow
+  value = aws_sfn_state_machine.sfn_workflow
 }
 output "sfn_arn" {
-  value = aws_sfn_state_machine.aws_step_function_workflow.arn
+  value = aws_sfn_state_machine.sfn_workflow.arn
 }

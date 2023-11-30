@@ -1,20 +1,19 @@
-variable "create" {
-  default = true
-}
-
+#variable "create" {
+#  default = true
+#}
 
 variable "role_arn" {
   default =""
 }
 
-variable "connections" {
-  type    = list(string)
-  default = []
-}
-
-variable "dpu" {
-  default = 2
-}
+#variable "connections" {
+#  type    = list(string)
+#  default = []
+#}
+#
+#variable "dpu" {
+#  default = 2
+#}
 
 variable "script_location" {}
 

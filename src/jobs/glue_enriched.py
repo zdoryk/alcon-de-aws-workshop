@@ -1,13 +1,11 @@
 import sys
 from awsglue.utils import getResolvedOptions
 import awswrangler as wr
-import logging
 from datetime import datetime, timedelta
 import pandas as pd
 
 args = getResolvedOptions(sys.argv, ["S3_BUCKET_NAME"])
 bucket_name = args["S3_BUCKET_NAME"]
-# bucket_name = 'alcon-workshop-data-099605873748'
 
 
 # Function to create the full name with title
@@ -41,12 +39,17 @@ def add_age_group(df):
 
 
 def main():
-    logging.info("Starting Glue enriched job")
+    print("Starting Glue enriched job")
     previous_hour_dt = datetime.utcnow() - timedelta(hours=1)
 
     # Getting the data from the S3 bucket
     df = wr.s3.read_csv(
         f's3://{bucket_name}/trusted/{previous_hour_dt.strftime("%d-%m-%Y_%H")}.csv'
+    )
+
+    # Task #1
+    df["IS_DEAD"] = df["DATE_DIED"].apply(
+        lambda x: True if x != "9999-99-99" else False
     )
 
     # Task #3
@@ -79,4 +82,5 @@ def main():
     )
 
 
+# This is why we don't specify the handler
 main()
