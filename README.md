@@ -5,10 +5,13 @@
 ### Setup Local Env
 1. Install Python 3.9^
 2. Create a virtual environment: ```python -m venv venv```
-3. Activate the virtual environment: 
+3. Activate the virtual environment:
    - Linux/MacOS: ```source venv/bin/activate```
    - Windows: ```.\venv\Scripts\activate```
 4. Install requirements: ```pip install -r requirements.txt```
+5. To build the infrastructure run:
+   - Linux/MacOS: ```./build_infrastructure.sh```
+   - Windows (POWERSHELL ONLY): ```.\build_infrastructure.ps1```
 
 ## Introduction
 You will be working with a dataset of patients in the hospital.
@@ -52,7 +55,7 @@ approaches of handling this. But I don't stop you to it more complex after the w
    Create age groups/bins with a 10-year step (e.g., 0-9 years, 10-19 years, etc.)
    and assign each patient to their respective age group. It's better to get the max age dynamically from the AGE column.
 
-   
+
 ## Notes
 #### Please for all of the data manipulation use Pandas library that can be found here: https://pandas.pydata.org/docs/
 #### Remember after this cleaning you will need to save the data in the S3 bucket or to .csv if we are running out of time.

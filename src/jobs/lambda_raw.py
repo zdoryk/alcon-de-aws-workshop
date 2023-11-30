@@ -6,6 +6,9 @@ import logging
 import awswrangler as wr
 
 
+logging.getLogger().setLevel(logging.INFO)
+
+
 def get_data_df(hour: str):
     logging.info("Getting data from API")
     headers = {"Authorization": f"Bearer {getenv('AUTH_TOKEN')}"}
@@ -14,7 +17,7 @@ def get_data_df(hour: str):
     (datetime.utcnow() - timedelta(hours=1))
     start_time = f"{hour}:00"
     end_time = f"{hour}:59"
-    api_base_url = "https://bc3v3ovbcc.execute-api.us-east-1.amazonaws.com/v1"
+    api_base_url = "https://43bhzz3c3f.execute-api.us-east-1.amazonaws.com/v1"
     # Get data from the API
     response = requests.get(
         f"{api_base_url}/data?date={today.strftime('%d-%m-%Y')}&start_time={start_time}&end_time={end_time}",

@@ -20,19 +20,51 @@ variable "job_temp_dir" {
   default = ""
 }
 
+
+locals {
+  temp_dir = "${path.module}/.temp_zip_dir"
+}
+
+resource "null_resource" "create_temp_dir" {
+  triggers = {
+    always_run = timestamp()
+  }
+
+  provisioner "local-exec" {
+    command = "mkdir -p ${local.temp_dir} && cp -r ${path.module}/src ${local.temp_dir}"
+  }
+}
+
+data "archive_file" "zip_the_python_code" {
+  depends_on = [null_resource.create_temp_dir]
+
+  type        = "zip"
+  source_dir  = local.temp_dir
+  output_path = "${path.module}/lambda_code.zip"
+}
+
 # Modules
 # Create the S3 buckets
 module "amazon_s3_data" {
   source           = "./modules/terraform-amazon-s3"
-  bucket_base_name = "alcon-workshop-data"
+  bucket_base_name = "workshop-data"
   s3_object_name   = "lambda_code.zip"
+  s3_object_source = "${path.module}/lambda_code.zip"
 }
 
 module "amazon_s3_glue" {
   source           = "./modules/terraform-amazon-s3"
-  bucket_base_name = "alcon-workshop-glue-code"
+  bucket_base_name = "workshop-glue-code"
   s3_object_name   = "glue_enriched.py"
+  s3_object_source = "${path.module}/src/jobs/glue_enriched.py"
 }
+
+
+#data "archive_file" "zip_the_python_code" {
+#  type        = "zip"
+#  source_dir     = "${path.module}/src/"
+#  output_path    = "${path.module}/lambda_code.zip"
+#}
 
 # Adding lambda for both raw and trusted layers
 module "aws_lambda_raw" {
@@ -41,8 +73,7 @@ module "aws_lambda_raw" {
   s3_bucket_name    = module.amazon_s3_data.bucket_name
   handler           = "src.jobs.lambda_raw.main"
   state_machine_arn = module.aws_sfn_state_machine.sfn_arn
-  temp_dir          = ""
-  zip_location      = "${path.module}/dist/lambda_code.zip"
+  zip_location      = "${path.module}/lambda_code.zip"
   layer             = "raw"
   runtime           = "python3.9"
   timeout           = 180 # In seconds
@@ -54,8 +85,7 @@ module "aws_lambda_trusted" {
   s3_bucket_name    = module.amazon_s3_data.bucket_name
   handler           = "src.jobs.lambda_trusted.main"
   state_machine_arn = module.aws_sfn_state_machine.sfn_arn
-  temp_dir          = ""
-  zip_location      = "${path.module}/dist/lambda_code.zip"
+  zip_location      = "${path.module}/lambda_code.zip"
   layer             = "trusted"
   runtime           = "python3.9"
   timeout           = 180 # In seconds

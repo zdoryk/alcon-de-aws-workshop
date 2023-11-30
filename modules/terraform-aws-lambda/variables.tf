@@ -1,24 +1,4 @@
-variable "create" {
-  default = true
-}
-
-variable "role_arn" {
-  default = ""
-}
-
-variable "connections" {
-  type    = list(string)
-  default = []
-}
-
 variable "zip_location" {}
-
-variable "command_name" {
-  default = ""
-}
-
-variable "temp_dir" {
-}
 
 variable "description" {
   default = ""

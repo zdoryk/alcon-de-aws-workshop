@@ -1,3 +1,5 @@
+# This file is only need to show you that we can use other modules
+# in our project and we can easily zip them to use with AWS Lambda
 class AwsManager:
     def __int__(self):
         pass
