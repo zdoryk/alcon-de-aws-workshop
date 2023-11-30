@@ -167,3 +167,4 @@ plan.out
 
 *.zip
 .DS_Store
+.temp_zip_dir/

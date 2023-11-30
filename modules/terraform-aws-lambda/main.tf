@@ -3,8 +3,8 @@ data "aws_caller_identity" "current" {}
 
 
 # Lambda IAM role creation
-resource "aws_iam_role" "alcon-workshop-lambda_role" {
-  name = "alcon-workshop-lambda-${var.layer}-role"
+resource "aws_iam_role" "workshop-lambda_role" {
+  name = "workshop-lambda-${var.layer}-role"
   assume_role_policy = jsonencode({
     "Version" : "2012-10-17",
     "Statement" : [
@@ -57,16 +57,16 @@ resource "aws_iam_policy" "LambdaPolicy" {
 
 # Attach the IAM policies to the equivalent rule
 resource "aws_iam_role_policy_attachment" "LambdaPolicyAttachment" {
-  role       = aws_iam_role.alcon-workshop-lambda_role.name
+  role       = aws_iam_role.workshop-lambda_role.name
   policy_arn = aws_iam_policy.LambdaPolicy.arn
 }
 
 # Lambda creation
-resource "aws_lambda_function" "alcon-workshop-lambda" {
-  function_name    = "alcon-workshop-lambda-${var.layer}"
+resource "aws_lambda_function" "workshop-lambda" {
+  function_name    = "workshop-lambda-${var.layer}"
   handler          = var.handler
   runtime          = var.runtime
-  role             = aws_iam_role.alcon-workshop-lambda_role.arn
+  role             = aws_iam_role.workshop-lambda_role.arn
   /*
   NOTE: ${path.module} is a special Terraform interpolation function that returns the filesystem path of the directory
         where the currently executing Terraform configuration files are located. It's a convenient way to reference files
@@ -87,9 +87,9 @@ resource "aws_lambda_function" "alcon-workshop-lambda" {
 }
 
 output "lambda_arn" {
-  value = aws_lambda_function.alcon-workshop-lambda.arn
+  value = aws_lambda_function.workshop-lambda.arn
 }
 
 output "lambda_name" {
-  value = aws_lambda_function.alcon-workshop-lambda.function_name
+  value = aws_lambda_function.workshop-lambda.function_name
 }

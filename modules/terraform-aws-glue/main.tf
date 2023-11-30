@@ -33,13 +33,13 @@ data "aws_iam_policy_document" "policy_document" {
 }
 
 resource "aws_iam_policy" "s3_access_iam_policy" {
-  name = "sample-glue-s3-access-policy"
+  name = "workshop-glue-s3-access-policy"
   policy = data.aws_iam_policy_document.policy_document.json
 }
 
 # Glue IAM roles and Policies
-resource "aws_iam_role" "sample_glue_role" {
-  name = "sample-glue-role"
+resource "aws_iam_role" "workshop_glue_role" {
+  name = "workshop-glue-role"
   assume_role_policy = <<EOF
 {
    "Version":"2012-10-17",
@@ -60,22 +60,22 @@ EOF
 }
 
 resource "aws_iam_role_policy_attachment" "glue_service_policy" {
-  role       = aws_iam_role.sample_glue_role.name
+  role       = aws_iam_role.workshop_glue_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole"
 }
 
 resource "aws_iam_role_policy_attachment" "platform_metrics_glue_iam_policy" {
-  role       = aws_iam_role.sample_glue_role.name
+  role       = aws_iam_role.workshop_glue_role.name
   policy_arn = aws_iam_policy.s3_access_iam_policy.arn
 }
 
 resource "aws_glue_job" "glue_job_python_shell" {
-  count = var.create ? 1 : 0
-
-  name         = "sample-glue-job-python-shell-terraform"
-  description  = "AWS Glue Python Shell Job terraform example"
-  role_arn     = aws_iam_role.sample_glue_role.arn
+#  count = var.create ? 1 : 0
+  name         = "workshop-glue-python-shell-job"
+  description  = "AWS Glue Python Shell Job"
+  role_arn     = aws_iam_role.workshop_glue_role.arn
   glue_version = "1.0"
+
 
   command {
     name           = "pythonshell"

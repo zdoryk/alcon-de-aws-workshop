@@ -4,6 +4,8 @@ from os import getenv
 from datetime import datetime, timedelta
 import logging
 
+logging.getLogger().setLevel(logging.INFO)
+
 
 def clean_age_column(df: pd.DataFrame) -> pd.DataFrame:
     # Remove negative values
@@ -27,11 +29,6 @@ def main(handler=None, context=None):
         path=f's3://{getenv("S3_BUCKET_NAME")}/raw/{previous_hour_dt.strftime("%d-%m-%Y_%H")}.csv',
         sep=",",
         header=0,
-    )
-
-    # Task #1
-    df["IS_DEAD"] = df["DATE_DIED"].apply(
-        lambda x: True if x == "9999-99-99" else False
     )
 
     # Task #2
