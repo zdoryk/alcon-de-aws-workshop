@@ -168,3 +168,4 @@ plan.out
 *.zip
 .DS_Store
 .temp_zip_dir/
+.ruff_cache/
