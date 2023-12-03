@@ -1,66 +1,104 @@
-
 # Data Engineering Workshop
-
 ## Prerequisites
-### Setup Local Env
-1. Install Python 3.9^
+### GitHub Desktop
+1. Download GitHub Desktop: https://desktop.github.com/
+2. Install it.
+3. Login to your GitHub account.
+4. Clone this repository.
+5. Open the repository in your IDE.
+6. Create a new branch as "dev/<YOUR_NAME>", for example: "dev/danylo".
+7. Make some very small change in the README.md file.
+8. Make sure that you are on the branch that you created.
+9. Commit and push the changes to the remote repository.
+
+---
+
+### Python
+1. Install Python 3.9^: https://www.python.org/downloads/
 2. Create a virtual environment: ```python -m venv venv```
 3. Activate the virtual environment:
    - Linux/MacOS: ```source venv/bin/activate```
    - Windows: ```.\venv\Scripts\activate```
 4. Install requirements: ```pip install -r requirements.txt```
-5. To build the infrastructure run:
-   - Linux/MacOS: ```./build_infrastructure.sh```
-   - Windows (POWERSHELL ONLY): ```.\build_infrastructure.ps1```
 
-## Introduction
-You will be working with a dataset of patients in the hospital.
+**For windows users it might be required to add Python to PATH manually. https://realpython.com/add-python-to-path/**
 
-Imagine that you have not only historic data as but the new data is constantly coming from the data source.
-The job will run every hour. Your main goal is to create a Data Lake on which we will have data for
-separate day and hour in separate file for example:
-S3_Bucket
-|- covid_data=10-10-2023_11.csv
-|- covid_data=11-10-2023_12.csv
-You will need to make a request to this endpoint: "TODO", to get the data you will need to provide as a query parameters:
-1. Date in the next format: "dd-mm-yyyy".
-2. Start_time in the next format: "HH:mm".
-3. End_time in the next format: "HH:mm".
+---
 
-Also you will need to provide the AUTH_TOKEN, that you have in your .env file,
-**read this env variable from the file using Python code**.
-Token should be in the headers as "Authorization: Bearer <TOKEN>".
+### AWS CLI
+#### Installation
+1. Download installer:
+   - Windows: https://awscli.amazonaws.com/AWSCLIV2.msi
+   - MacOS: https://awscli.amazonaws.com/AWSCLIV2.pkg
+   - Linux: https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-linux.html#cliv2-linux-install
+2. Install it. (Note in some cases it will require to add it to PATH manually)
+3. Check if the installation was successful: ```aws --version```
 
-## You will need to clean the data and save it in the appropriate S3 bucket layer.
-#### What should be cleaned:
-1. You will need to create a new column called "died" which will be a bool column with "True" and "False" values.
-  "False" means that the patient survived and 1 means that the patient died. If the patient has an actual date
-  in the "DATE_DIED" column it means that the patient have died. If the patient has "9999-99-99" in the "DATE_DIED" column
-  it means that the patient is alive.
-2. Validate the data in the "AGE" column to ensure it makes sense.  If this column has any problems please fix
-   them to work automatically in the future.
-TODO. For example, ensure that there are
-   - Handling Invalid Ages - no negative ages
-   - Identify Outliers - no ages that are unrealistically high.
-   - Identify Missing Values - no missing ages.
-   - **NOTE: In terms of this workshop you can just filter those values, there is no need for now to implement comprehensive
-approaches of handling this. But I don't stop you to it more complex after the workshop in your free time**
+---
 
-3. You have a column "SEX", "AGE", "FIRST_NAME", "LAST_NAME" using these values please create a new column where
-   you will have a full name of the patient in the following format: "FIRST_NAME LAST_NAME". Also if the person
-   is older than 21y.o.use "Mr" or "Mrs" if the person is male or a female.
-   For example: "Mr. John Smith" or "Mrs. Jane Smith".
+#### Configuration
+1. Go to AWS Console -> IAM -> Users 
+2. If you don't have a user in Users tab, create it.
+   - Step 1: <img src="images/user_creation_step_1.png" alt="user_creation_step_1" style="width:60%;"/>
+   - Step 2: Add permissions to the user: <img src="images/user_creation_step_2.png" alt="user_creation_step_2" style="width:60%;"/>
+   - Step 3: <img src="images/user_creation_step_3.png" alt="user_creation_step_3" style="width:60%;"/>
+3. Click on the user and go to the Security credentials tab.
+4. Use "Ctrl + F" to find "Access keys" section.
+5. Click on "Create access key" button:
+   - Step 1: Choose CLI <img src="images/access_key_creation.png" alt="access_key_creation" style="width:60%;"/>
+   - Step 2: You can skip tag creation, just hit "Create access key"
+   - Step 3: Download .csv file with credentials and save it in a safe place, cause you will not be able to download it again.
+6. Open terminal and run ```aws configure```
+7. After this command you will be asked to provide:
+   - AWS Access Key ID (Access key ID from the .csv file)
+   - AWS Secret Access Key (Secret access key from the .csv file)
+   - Default region name (us-east-1) 
+   - Default output format (Just hit enter to skip it)
+8. Check if the configuration was successful: ```aws s3 ls```
+9. If you see the list of buckets, then everything is fine.
 
-4. Age Grouping:
-   Create age groups/bins with a 10-year step (e.g., 0-9 years, 10-19 years, etc.)
-   and assign each patient to their respective age group. It's better to get the max age dynamically from the AGE column.
+---
 
+### Terraform
+1. Download Terraform: https://developer.hashicorp.com/terraform/install
+   - Windows: 
+     - If you have 32bit processor: Choose 386 version
+     - If you have 64bit processor: Choose AMD64 version
+   - MacOS:
+     - Using brew:
+       ``` shell
+          brew tap hashicorp/tap
+          brew install hashicorp/tap/terraform
+       ```
+     - Using package manager:
+       - If you have Mac with M1^ chip: Choose ARM64 version
+       - If you have Mac with Intel chip: Choose AMD64 version
+   - Linux:
+     - If you're using package manager: 
+       - Choose your distribution from the menu and paste the commands that are shown on the page.
+     - Using binary installer:
+       - If you have 32bit processor: Choose 386 version
+       - If you have 64bit processor: Choose AMD64 version
+2. Check if the installation was successful: ```terraform --version```
 
-## Notes
-#### Please for all of the data manipulation use Pandas library that can be found here: https://pandas.pydata.org/docs/
-#### Remember after this cleaning you will need to save the data in the S3 bucket or to .csv if we are running out of time.
-#### Use .utcnow() to get the current time in UTC format. The time on AWS server can differ from your local time.
+**Note: For Windows users it might be required to add Terraform to PATH manually**
 
-###### If you want to use pre-commits you can:
+---
+### To build the infrastructure run:
+```terraform
+   terraform init
+   terraform plan -out plan.out
+   terraform apply plan.out
+```
+
+### If you want to use pre-commits
+Pre-commit is a tool that will run some checks before you commit your code. I add the config in .pre-commit-config.yaml file.
+#### It will run:
+1. pyupgrade - A tool (and pre-commit hook) to automatically upgrade syntax for newer versions of the language.
+2. black - Python code formatter.
+3. ruff - Also a code formatter.
+
+#### To use it:
 1. Install: ```pip install pre-commit```
 2. Run      ```pre-commit run --all-files```
+
